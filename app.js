@@ -256,29 +256,79 @@ function downloadReport() {
     setTimeout(() => showToast('Отчет успешно скачан!'), 1000);
 }
 
-// Функция фильтрации по регионам
-function filterTable(type) {
-    // Определяем, какую таблицу фильтруем и откуда берем значение
-    const filterValue = type === 'plants' 
-        ? document.getElementById('region-filter-plants').value 
-        : document.getElementById('region-filter-colleges').value;
+// Хранилище выбранных фильтров для каждого типа
+let activeFilters = {
+    plants: ['all'],
+    colleges: ['all']
+};
+
+// Функция переключения кнопок-фильтров
+function toggleFilter(type, region, btn) {
+    let filters = activeFilters[type];
+
+    if (region === 'all') {
+        // Если нажали "Все" - сбрасываем остальные и оставляем только "Все"
+        filters = ['all'];
+    } else {
+        // Если нажали на конкретный регион
+        // Убираем "Все", если оно было выбрано
+        if (filters.includes('all')) {
+            filters = [];
+        }
+
+        // Если регион уже выбран - убираем его, если нет - добавляем
+        if (filters.includes(region)) {
+            filters = filters.filter(f => f !== region);
+        } else {
+            filters.push(region);
+        }
+
+        // Если после удаления ничего не осталось - включаем "Все"
+        if (filters.length === 0) {
+            filters = ['all'];
+        }
+    }
+
+    // Сохраняем состояние
+    activeFilters[type] = filters;
+
+    // Обновляем визуальное состояние кнопок (какая активна, какая нет)
+    const container = document.getElementById(`${type}-filters`);
+    const buttons = container.querySelectorAll('.filter-btn');
+    
+    buttons.forEach(b => {
+        const btnRegion = b.innerText; // "Все", "Минск" и т.д.
         
-    // Находим все строки в нужной таблице
-    const tableBody = type === 'plants' 
-        ? document.getElementById('plants-table-body') 
-        : document.getElementById('colleges-table-body');
-        
+        // Проверяем, должна ли кнопка быть активной
+        if (filters.includes('all') && btnRegion === 'Все') {
+            b.classList.add('active');
+        } else if (filters.includes(btnRegion)) {
+            b.classList.add('active');
+        } else {
+            b.classList.remove('active');
+        }
+    });
+
+    // Применяем фильтрацию к таблице
+    applyFilters(type);
+}
+
+// Функция скрытия/показа строк в таблице
+function applyFilters(type) {
+    const filters = activeFilters[type];
+    const tableBody = document.getElementById(`${type}-table-body`);
+    if (!tableBody) return;
+
     const rows = tableBody.getElementsByTagName('tr');
 
-    // Проходимся по каждой строке
     for (let i = 0; i < rows.length; i++) {
-        const region = rows[i].getAttribute('data-region');
+        const rowRegion = rows[i].getAttribute('data-region');
         
-        // Если выбрано "Все регионы" или регион строки совпадает с выбранным
-        if (filterValue === 'all' || region === filterValue) {
-            rows[i].style.display = ''; // Показываем строку
+        // Если выбрано "Все" или регион строки есть в списке выбранных
+        if (filters.includes('all') || filters.includes(rowRegion)) {
+            rows[i].style.display = ''; // Показываем
         } else {
-            rows[i].style.display = 'none'; // Скрываем строку
+            rows[i].style.display = 'none'; // Скрываем
         }
     }
 }

@@ -3,266 +3,465 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillBridge | Рабочий кабинет</title>
-    <!-- Иконки -->
+    <title>SkillBridge | Синхронизация ОСиПТО</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Наш CSS -->
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* ================= ПЕРЕМЕННЫЕ ================= */
+        :root {
+            --bg: #f8fafc; --card: rgba(255, 255, 255, 0.85); --text: #0f172a; --muted: #64748b;
+            --blue: #3b82f6; --blue-glow: rgba(59, 130, 246, 0.2); --blue-light: #eff6ff;
+            --green: #10b981; --green-glow: rgba(16, 185, 129, 0.2);
+            --red: #ef4444; --red-glow: rgba(239, 68, 68, 0.2);
+            --orange: #f59e0b; --border: rgba(226, 232, 240, 0.8);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.04); --glass-blur: blur(16px);
+        }
+        body.dark-theme {
+            --bg: #0b1120; --card: rgba(30, 41, 59, 0.7); --text: #f8fafc; --muted: #94a3b8;
+            --blue: #60a5fa; --blue-glow: rgba(96, 165, 250, 0.3); --blue-light: rgba(59, 130, 246, 0.1);
+            --green: #34d399; --green-glow: rgba(52, 211, 153, 0.3);
+            --red: #f87171; --red-glow: rgba(248, 113, 113, 0.3);
+            --orange: #fbbf24; --border: rgba(51, 65, 85, 0.5);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { display: flex; height: 100vh; background-color: var(--bg); background-image: radial-gradient(at 0% 0%, var(--blue-light) 0px, transparent 50%), radial-gradient(at 100% 100%, var(--green-light) 0px, transparent 50%); color: var(--text); overflow: hidden; }
+
+        /* ================= САЙДБАР ================= */
+        .sidebar { width: 280px; background: var(--card); backdrop-filter: var(--glass-blur); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; }
+        .logo { padding: 28px 24px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .logo i { color: var(--blue); font-size: 28px; filter: drop-shadow(0 0 8px var(--blue-glow)); }
+        .badge { font-size: 10px; background: linear-gradient(135deg, var(--blue), #8b5cf6); color: white; padding: 3px 8px; border-radius: 6px; margin-left: auto; }
+        .nav { flex: 1; padding: 24px 16px; }
+        .nav-item { display: flex; align-items: center; gap: 14px; padding: 14px 20px; color: var(--muted); border-radius: 12px; font-weight: 600; font-size: 15px; cursor: pointer; margin-bottom: 6px; }
+        .nav-item:hover { background: var(--bg); color: var(--text); transform: translateX(4px); }
+        .nav-item.active { background: var(--blue); color: white; box-shadow: 0 4px 16px var(--blue-glow); }
+        .nav-item i { width: 20px; text-align: center; font-size: 18px; }
+        .user { padding: 20px 24px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 14px; }
+        .avatar { width: 42px; height: 42px; background: linear-gradient(135deg, #8b5cf6, var(--blue)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+        .btn-reset { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--red); font-weight: 700; cursor: pointer; margin: 0 24px 20px 24px; width: calc(100% - 48px); }
+
+        /* ================= ШАПКА ================= */
+        .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .top { background: var(--card); backdrop-filter: var(--glass-blur); padding: 20px 40px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 20; }
+        .top h1 { font-size: 24px; font-weight: 800; }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .theme-toggle { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .roles { display: flex; background: var(--bg); padding: 6px; border-radius: 14px; border: 1px solid var(--border); }
+        .roles button { border: none; background: transparent; padding: 10px 20px; font-size: 14px; font-weight: 700; color: var(--muted); border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .roles button.active { background: var(--card); color: var(--blue); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        /* ================= СТРАНИЦЫ ================= */
+        .page { display: none; padding: 40px; padding-top: 100px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .page.active { display: block; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ================= КАРТОЧКИ ================= */
+        .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+        .kpi { background: var(--card); backdrop-filter: var(--glass-blur); padding: 28px; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .kpi::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--blue); border-radius: 20px 0 0 20px; }
+        .kpi.red::before { background: var(--red); } .kpi.green::before { background: var(--green); } .kpi.orange::before { background: var(--orange); }
+        .kpi h3 { font-size: 14px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .kpi .val { font-size: 42px; font-weight: 800; margin-bottom: 8px; }
+        .text-red { color: var(--red) !important; } .text-green { color: var(--green) !important; } .text-orange { color: var(--orange) !important; }
+
+        .chart-kpi { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .donut-container { position: relative; width: 110px; height: 110px; margin-bottom: 16px; }
+        .donut { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(var(--green) 0%, var(--border) 0%); }
+        .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 26px; font-weight: 800; }
+
+        /* ================= ПАНЕЛИ ================= */
+        .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+        .panel { background: var(--card); backdrop-filter: var(--glass-blur); padding: 32px; border-radius: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .panel h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+        .panel h2 i { color: var(--blue); }
+        .panel .sub { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+
+        .input, select { width: 100%; padding: 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; font-weight: 500; outline: none; margin-bottom: 16px; background: var(--bg); color: var(--text); }
+        .input:focus, select:focus { border-color: var(--blue); background: var(--card); box-shadow: 0 0 0 4px var(--blue-glow); }
+        .btn { background: linear-gradient(135deg, var(--blue), #6366f1); color: white; border: none; padding: 16px 24px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-sm { background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue); padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-sm.done { background: rgba(16, 185, 129, 0.1); color: var(--green); border-color: var(--green); cursor: default; }
+        .btn-sm.work { background: rgba(245, 158, 11, 0.1); color: var(--orange); border-color: var(--orange); }
+
+        .match { background: var(--bg); padding: 24px; border-radius: 16px; border: 2px dashed var(--border); text-align: center; color: var(--muted); }
+        .match.active { background: var(--blue-light); border-color: var(--blue); color: var(--text); text-align: left; border-style: solid; }
+        .match strong { font-size: 22px; display: block; margin-bottom: 8px; color: var(--blue); }
+
+        .list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border: 1px solid var(--border); border-radius: 16px; background: var(--card); }
+
+        /* ================= ТАБЛИЦЫ ================= */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th { text-align: left; padding: 16px; border-bottom: 2px solid var(--border); color: var(--muted); font-size: 13px; font-weight: 800; text-transform: uppercase; }
+        .data-table td { padding: 20px 16px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 15px; }
+        .data-table tr { cursor: pointer; }
+        .data-table tr:hover { background: var(--bg); }
+        .status { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; }
+        .red-text-bg { color: var(--red); background: rgba(239, 68, 68, 0.1); }
+        .green-text-bg { color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .orange-text-bg { color: var(--orange); background: rgba(245, 158, 11, 0.1); }
+
+        /* ================= ФИЛЬТРЫ ================= */
+        .filter-btn { padding: 8px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; }
+        .filter-btn:hover { border-color: var(--blue); }
+        .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+        /* ================= МОДАЛКА ================= */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card); width: 500px; max-width: 90%; border-radius: 24px; border: 1px solid var(--border); transform: scale(0.95); transition: 0.3s; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
+        .modal-close { background: transparent; border: none; font-size: 24px; color: var(--muted); cursor: pointer; }
+        .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .modal-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
+        .modal-label { color: var(--muted); font-weight: 600; font-size: 14px; }
+        .modal-value { font-weight: 800; color: var(--text); font-size: 15px; }
+
+        /* ================= УВЕДОМЛЕНИЯ ================= */
+        .toast { position: fixed; bottom: 40px; right: 40px; background: var(--text); color: var(--bg); padding: 16px 28px; border-radius: 16px; font-weight: 700; transition: 0.3s; z-index: 1100; transform: translateY(100px); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
 </head>
 <body>
 
-    <!-- ================= САЙДБАР ================= -->
+    <!-- САЙДБАР -->
     <aside class="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-bridge"></i> SkillBridge <span class="badge">PRO</span>
-        </div>
-        
+        <div class="logo"><i class="fa-solid fa-bridge"></i> SkillBridge <span class="badge">PRO</span></div>
         <nav class="nav">
-            <div class="nav-item active" onclick="navTo('analytics', this)">
-                <i class="fa-solid fa-house"></i> Рабочий стол
-            </div>
-            <div class="nav-item" onclick="navTo('plants', this)">
-                <i class="fa-solid fa-industry"></i> Предприятия
-            </div>
-            <div class="nav-item" onclick="navTo('colleges', this)">
-                <i class="fa-solid fa-graduation-cap"></i> Колледжи
-            </div>
-            <div class="nav-item" onclick="navTo('reports', this)">
-                <i class="fa-solid fa-file-invoice"></i> Отчеты
-            </div>
+            <div class="nav-item active" onclick="navTo('analytics', this)"><i class="fa-solid fa-house"></i> Рабочий стол</div>
+            <div class="nav-item" onclick="navTo('plants', this)"><i class="fa-solid fa-industry"></i> Предприятия</div>
+            <div class="nav-item" onclick="navTo('colleges', this)"><i class="fa-solid fa-graduation-cap"></i> Колледжи</div>
+            <div class="nav-item" onclick="navTo('reports', this)"><i class="fa-solid fa-file-invoice"></i> Отчеты</div>
         </nav>
-
-        <!-- Профиль пользователя -->
         <div class="user">
             <div class="avatar">МО</div>
             <div class="user-info">
-                <p class="name">Мин. Образования</p>
-                <p class="role">Республиканский уровень</p>
+                <p class="name" style="font-size:15px; font-weight:800;">Мин. Образования</p>
+                <p class="role" style="font-size:12px; color:var(--muted);">Республиканский уровень</p>
             </div>
         </div>
-
-        <!-- Кнопка сброса демо-данных -->
-        <div style="padding: 0 24px 20px 24px;">
-            <button onclick="resetDemo()" class="btn-reset">
-                <i class="fa-solid fa-rotate-left"></i> Сбросить данные
-            </button>
-        </div>
+        <button onclick="resetDemo()" class="btn-reset"><i class="fa-solid fa-rotate-left"></i> Сбросить данные</button>
     </aside>
 
-    <!-- ================= ОСНОВНОЙ КОНТЕНТ ================= -->
+    <!-- КОНТЕНТ -->
     <main class="main">
-        
-        <!-- Верхняя панель -->
         <header class="top">
             <h1 id="page-title">Синхронизация рынка труда</h1>
             <div class="header-actions">
-                <!-- Кнопка переключения темы -->
-                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
-                
-                <!-- Переключатель ролей (Завод / Колледж) -->
+                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><i class="fa-solid fa-moon"></i></button>
                 <div class="roles" id="role-switcher">
-                    <button id="tab-plant" class="active" onclick="switchRole('plant')">
-                        <i class="fa-solid fa-industry"></i> Кабинет Завода
-                    </button>
-                    <button id="tab-college" onclick="switchRole('college')">
-                        <i class="fa-solid fa-building-columns"></i> Кабинет Колледжа
-                    </button>
+                    <button id="tab-plant" class="active" onclick="switchRole('plant')"><i class="fa-solid fa-industry"></i> Кабинет Завода</button>
+                    <button id="tab-college" onclick="switchRole('college')"><i class="fa-solid fa-building-columns"></i> Кабинет Колледжа</button>
                 </div>
             </div>
         </header>
 
-        <!-- ================= СТРАНИЦА 1: РАБОЧИЙ СТОЛ ================= -->
+        <!-- СТРАНИЦА 1: АНАЛИТИКА -->
         <div id="page-analytics" class="page active">
-            
-            <!-- Вид для Завода -->
             <div id="view-plant">
                 <div class="kpis">
-                    <!-- Карточка 1 -->
-                    <div class="kpi red">
-                        <h3>Ожидают решения</h3>
-                        <p class="val text-red" id="plant-gap-count">0</p>
-                        <p class="trend text-red"><i class="fa-solid fa-triangle-exclamation"></i> Запросов без ответа</p>
-                    </div>
-                    <!-- Карточка 2 -->
-                    <div class="kpi green">
-                        <h3>Выполнено</h3>
-                        <p class="val text-green" id="plant-done-count">0</p>
-                        <p class="trend text-green"><i class="fa-solid fa-check"></i> Закрыто колледжами</p>
-                    </div>
-                    <!-- Карточка 3: График -->
+                    <div class="kpi red"><h3>Ожидают решения</h3><p class="val text-red" id="plant-gap-count">0</p></div>
+                    <div class="kpi green"><h3>Выполнено</h3><p class="val text-green" id="plant-done-count">0</p></div>
                     <div class="kpi chart-kpi">
-                        <h3>Общий прогресс</h3>
+                        <h3>Прогресс</h3>
                         <div class="donut-container">
                             <div class="donut" id="donut-chart"></div>
                             <div class="donut-center" id="donut-percent">0%</div>
                         </div>
-                        <p class="trend">Закрыто от всех запросов</p>
                     </div>
                 </div>
-
-                                <!-- Лента событий -->
-                <div class="panel" style="margin-top: 24px; width: 100%;">
-                    <h2><i class="fa-solid fa-clock-rotate-left"></i> Лента событий</h2>
-                    <p class="sub">Последние действия в системе</p>
-                    <ul class="timeline">
-                        <li class="timeline-item">
-                            <div class="time">10 мин назад</div>
-                            <div class="desc"><strong>ОАО "БелАЗ"</strong> создал запрос на <span class="text-blue">Python для станков</span></div>
-                        </li>
-                        <li class="timeline-item">
-                            <div class="time">1 час назад</div>
-                            <div class="desc"><strong>Минский колледж</strong> внедрил модуль <span class="text-green">AutoCAD</span></div>
-                        </li>
-                        <li class="timeline-item">
-                            <div class="time">Вчера</div>
-                            <div class="desc"><strong>ОАО "МТЗ"</strong> подтвердил готовность 15 студентов</div>
-                        </li>
-                    </ul>
-                </div>
-                
                 <div class="panels">
-                    <!-- Панель поиска -->
                     <div class="panel">
                         <h2><i class="fa-solid fa-magnifying-glass-chart"></i> Поиск колледжа</h2>
-                        <p class="sub">Выберите требуемую компетенцию, чтобы найти учебное заведение.</p>
                         <select id="skill-select" class="input" onchange="analyzeSkill()">
-                            <option value="python">Python (Автоматизация)</option>
+                            <option value="python">Python</option>
                             <option value="cnc">Станки с ЧПУ</option>
-                            <option value="autocad">AutoCAD (Проектирование)</option>
                         </select>
-                        <div id="match-box" class="match">Выберите навык для анализа...</div>
+                        <div id="match-box" class="match">Выберите навык...</div>
                     </div>
-                    
-                    <!-- Панель создания запроса -->
                     <div class="panel">
-                        <h2><i class="fa-solid fa-bolt"></i> Создать запрос</h2>
-                        <p class="sub">Опишите, каких специалистов не хватает вашему предприятию.</p>
+                        <h2><i class="fa-solid fa-bolt"></i> Новый запрос</h2>
                         <input type="text" id="new-skill-input" class="input" placeholder="Например: Оператор ЧПУ">
-                        <button class="btn" onclick="createRequest()">
-                            <i class="fa-solid fa-paper-plane"></i> Отправить колледжам
-                        </button>
+                        <button class="btn" onclick="createRequest()">Отправить</button>
                     </div>
                 </div>
             </div>
-
-            <!-- Вид для Колледжа -->
             <div id="view-college" style="display:none;">
                 <div class="kpis">
-                    <div class="kpi red">
-                        <h3>Новые запросы</h3>
-                        <p class="val text-red" id="college-req-count">0</p>
-                        <p class="trend">Требуют рассмотрения</p>
-                    </div>
-                    <div class="kpi orange">
-                        <h3>В работе</h3>
-                        <p class="val text-orange" id="college-work-count">0</p>
-                        <p class="trend">Взято методистами</p>
-                    </div>
-                    <div class="kpi green">
-                        <h3>Внедрено</h3>
-                        <p class="val text-green" id="college-done-count">0</p>
-                        <p class="trend"><i class="fa-solid fa-check"></i> В учебном плане</p>
-                    </div>
+                    <div class="kpi red"><h3>Новые</h3><p class="val text-red" id="college-req-count">0</p></div>
+                    <div class="kpi orange"><h3>В работе</h3><p class="val text-orange" id="college-work-count">0</p></div>
+                    <div class="kpi green"><h3>Внедрено</h3><p class="val text-green" id="college-done-count">0</p></div>
                 </div>
                 <div class="panel" style="width: 100%;">
-                    <h2><i class="fa-solid fa-list-check"></i> Задачи на обновление плана</h2>
-                    <p class="sub">Нажмите "Взять в работу", когда методист начнет разработку модуля.</p>
-                    <ul class="list" id="college-list">
-                        <!-- Сюда JS будет добавлять задачи -->
-                    </ul>
+                    <h2><i class="fa-solid fa-list-check"></i> Задачи</h2>
+                    <ul class="list" id="college-list"></ul>
                 </div>
             </div>
         </div>
 
-        <!-- ================= СТРАНИЦА 2: ПРЕДПРИЯТИЯ ================= -->
+        <!-- СТРАНИЦА 2: ПРЕДПРИЯТИЯ -->
         <div id="page-plants" class="page">
             <div class="panel" style="width: 100%;">
-                <h2><i class="fa-solid fa-industry"></i> Реестр предприятий</h2>
-                <p class="sub">Нажмите на строку, чтобы посмотреть детали и контакты.</p>
-                <div style="margin-bottom: 20px; max-width: 300px;">
-                <select id="region-filter-plants" class="input" onchange="filterTable('plants')">
-                    <option value="all">Все регионы</option>
-                    <option value="Минск">Минск</option>
-                    <option value="Жодино">Жодино</option>
-                </select>
-            </div>
+                <h2><i class="fa-solid fa-industry"></i> Предприятия</h2>
+                <p class="sub">Фильтр по регионам:</p>
+                <!-- Кнопки-фильтры -->
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" id="plants-filters">
+                    <button class="filter-btn active" onclick="toggleFilter('plants', 'all', this)">Все</button>
+                    <button class="filter-btn" onclick="toggleFilter('plants', 'Минск', this)">Минск</button>
+                    <button class="filter-btn" onclick="toggleFilter('plants', 'Жодино', this)">Жодино</button>
+                </div>
+                
                 <table class="data-table">
-                    <thead>
-                        <tr><th>Предприятие</th><th>Регион</th><th>Активных запросов</th><th>Статус</th></tr>
-                    </thead>
-                    <tbody>
-                        <tbody id="plants-table-body">
-                        <tr onclick="openPlant('БелАЗ')" data-region="Жодино"><td>ОАО "БелАЗ"</td><td>Жодино</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td></tr>
-                        <tr onclick="openPlant('МТЗ')" data-region="Минск"><td>ОАО "МТЗ"</td><td>Минск</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td></tr>
-                        <tr onclick="openPlant('Интеграл')" data-region="Минск"><td>ОАО "Интеграл"</td><td>Минск</td><td>0</td><td><span class="status green-text-bg">Синхронизировано</span></td></tr>
+                    <thead><tr><th>Предприятие</th><th>Регион</th><th>Запросов</th></tr></thead>
+                    <tbody id="plants-table-body">
+                        <tr onclick="openPlant('БелАЗ')" data-region="Жодино"><td>ОАО "БелАЗ"</td><td>Жодино</td><td>1</td></tr>
+                        <tr onclick="openPlant('МТЗ')" data-region="Минск"><td>ОАО "МТЗ"</td><td>Минск</td><td>1</td></tr>
+                        <tr onclick="openPlant('Интеграл')" data-region="Минск"><td>ОАО "Интеграл"</td><td>Минск</td><td>0</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ================= СТРАНИЦА 3: КОЛЛЕДЖИ ================= -->
+        <!-- СТРАНИЦА 3: КОЛЛЕДЖИ -->
         <div id="page-colleges" class="page">
             <div class="panel" style="width: 100%;">
-                <h2><i class="fa-solid fa-graduation-cap"></i> Реестр колледжей</h2>
-                <p class="sub">Нажмите на строку, чтобы посмотреть детали учебного заведения.</p>
+                <h2><i class="fa-solid fa-graduation-cap"></i> Колледжи</h2>
+                <p class="sub">Фильтр по регионам:</p>
+                <!-- Кнопки-фильтры -->
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;" id="colleges-filters">
+                    <button class="filter-btn active" onclick="toggleFilter('colleges', 'all', this)">Все</button>
+                    <button class="filter-btn" onclick="toggleFilter('colleges', 'Минск', this)">Минск</button>
+                    <button class="filter-btn" onclick="toggleFilter('colleges', 'Брест', this)">Брест</button>
+                    <button class="filter-btn" onclick="toggleFilter('colleges', 'Гомель', this)">Гомель</button>
+                </div>
+
                 <table class="data-table">
-                    <thead>
-                        <tr><th>Учреждение</th><th>Город</th><th>Закрыто задач</th><th>Статус</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr onclick="openCollege('Минский')" style="cursor: pointer;">
-                            <td>Минский радиотехнический колледж</td><td>Минск</td><td>12</td><td><span class="status green-text-bg">Активен</span></td>
-                        </tr>
-                        <tr onclick="openCollege('Брестский')" style="cursor: pointer;">
-                            <td>Брестский машиностроительный колледж</td><td>Брест</td><td>4</td><td><span class="status orange-text-bg">Отстает</span></td>
-                        </tr>
-                        <tr onclick="openCollege('Гомельский')" style="cursor: pointer;">
-                            <td>Гомельский государственный колледж</td><td>Гомель</td><td>8</td><td><span class="status green-text-bg">Активен</span></td>
-                        </tr>
+                    <thead><tr><th>Учреждение</th><th>Город</th><th>Задач</th></tr></thead>
+                    <tbody id="colleges-table-body">
+                        <tr onclick="openCollege('Минский')" data-region="Минск"><td>Минский радиотехнический</td><td>Минск</td><td>12</td></tr>
+                        <tr onclick="openCollege('Брестский')" data-region="Брест"><td>Брестский машиностроительный</td><td>Брест</td><td>4</td></tr>
+                        <tr onclick="openCollege('Гомельский')" data-region="Гомель"><td>Гомельский государственный</td><td>Гомель</td><td>8</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ================= СТРАНИЦА 4: ОТЧЕТЫ ================= -->
+        <!-- СТРАНИЦА 4: ОТЧЕТЫ -->
         <div id="page-reports" class="page">
             <div class="panel" style="width: 100%;">
-                <h2><i class="fa-solid fa-file-invoice"></i> Сводный отчет</h2>
-                <p class="sub">Статистика по закрытым запросам за текущий месяц.</p>
-                <div class="report-box">
-                    <p>Всего внедрено навыков в РБ</p>
-                    <h1 id="report-total">0</h1>
+                <h2><i class="fa-solid fa-file-invoice"></i> Отчеты</h2>
+                <div class="kpi green" style="margin-top:20px;">
+                    <h3>Экономия</h3>
+                    <p class="val text-green" id="report-total">0 BYN</p>
                 </div>
-                <button class="btn" onclick="downloadReport()" style="max-width: 300px; margin: 0 auto;">
-                    <i class="fa-solid fa-download"></i> Скачать отчет
-                </button>
             </div>
         </div>
     </main>
 
-    <!-- ================= МОДАЛЬНОЕ ОКНО (Всплывающие детали) ================= -->
+    <!-- МОДАЛКА -->
     <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h2 id="modal-title">Заголовок</h2>
-                <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                <h2 id="modal-title">Детали</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div id="modal-body" class="modal-body">
-                <!-- Сюда JS будет вставлять текст -->
-            </div>
+            <div id="modal-body" class="modal-body"></div>
         </div>
     </div>
 
-    <!-- ================= УВЕДОМЛЕНИЯ ================= -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-circle-check"></i> <span id="toast-text">Готово!</span>
-    </div>
+    <!-- ТОСТ -->
+    <div id="toast" class="toast"><span id="toast-text">Готово!</span></div>
 
-    <!-- Подключение JS -->
-    <script src="app.js"></script>
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        // --- ДАННЫЕ ---
+        let requests = JSON.parse(localStorage.getItem('sb_requests')) || [
+            { id: 1, name: "Python для станков", company: "БелАЗ", status: "gap" },
+            { id: 2, name: "Управление Siemens", company: "МТЗ", status: "gap" }
+        ];
+
+        // --- ХРАНИЛИЩЕ ФИЛЬТРОВ ---
+        let activeFilters = {
+            plants: ['all'],
+            colleges: ['all']
+        };
+
+        // --- ТЕМА ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            document.querySelector('#theme-btn i').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            localStorage.setItem('sb_theme', isDark ? 'dark' : 'light');
+        }
+
+        // --- НАВИГАЦИЯ ---
+        function navTo(pageId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            el.classList.add('active');
+            
+            const switcher = document.getElementById('role-switcher');
+            const title = document.getElementById('page-title');
+            if (pageId === 'analytics') { switcher.style.display = 'flex'; title.innerText = 'Синхронизация рынка труда'; }
+            else { switcher.style.display = 'none'; title.innerText = pageId === 'plants' ? 'Предприятия' : pageId === 'colleges' ? 'Колледжи' : 'Отчеты'; }
+            updateUI();
+        }
+
+        // --- РОЛИ ---
+        function switchRole(role) {
+            document.getElementById('tab-plant').classList.toggle('active', role === 'plant');
+            document.getElementById('tab-college').classList.toggle('active', role === 'college');
+            document.getElementById('view-plant').style.display = role === 'plant' ? 'block' : 'none';
+            document.getElementById('view-college').style.display = role === 'college' ? 'block' : 'none';
+            updateUI();
+        }
+
+        // --- ЛОГИКА ---
+        function analyzeSkill() {
+            const skill = document.getElementById('skill-select').value;
+            const box = document.getElementById('match-box');
+            box.classList.add('active');
+            box.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Поиск...`;
+            setTimeout(() => {
+                let res = skill === 'python' ? `<strong>Минский радиотехнический</strong>Готовность: 85%.` : `<strong>Брестский машиностроительный</strong>Готовность: 40%.`;
+                box.innerHTML = res;
+            }, 500);
+        }
+
+        function createRequest() {
+            const input = document.getElementById('new-skill-input');
+            if(!input.value.trim()) return;
+            requests.push({ id: Date.now(), name: input.value, company: "Ваше предприятие", status: "gap" });
+            saveData(); input.value = ''; showToast('Запрос отправлен!'); updateUI();
+        }
+
+        function changeStatus(id) {
+            const req = requests.find(r => r.id === id);
+            if (!req) return;
+            if (req.status === 'gap') { req.status = 'work'; showToast(`В работе.`); }
+            else if (req.status === 'work') { req.status = 'done'; showToast(`Внедрено!`); }
+            saveData(); updateUI();
+        }
+
+        function updateUI() {
+            const gap = requests.filter(r => r.status === 'gap').length;
+            const work = requests.filter(r => r.status === 'work').length;
+            const done = requests.filter(r => r.status === 'done').length;
+            const total = requests.length;
+
+            // Счетчики
+            const plantGap = document.getElementById('plant-gap-count');
+            if (plantGap) plantGap.innerText = gap;
+            const plantDone = document.getElementById('plant-done-count');
+            if (plantDone) plantDone.innerText = done;
+            
+            const collegeReq = document.getElementById('college-req-count');
+            if (collegeReq) collegeReq.innerText = gap;
+            const collegeWork = document.getElementById('college-work-count');
+            if (collegeWork) collegeWork.innerText = work;
+            const collegeDone = document.getElementById('college-done-count');
+            if (collegeDone) collegeDone.innerText = done;
+
+            const reportTotal = document.getElementById('report-total');
+            if (reportTotal) reportTotal.innerText = (done * 40000).toLocaleString('ru-RU') + ' BYN';
+
+            // График
+            let percent = total === 0 ? 0 : Math.round((done / total) * 100);
+            const donut = document.getElementById('donut-chart');
+            if(donut) {
+                donut.style.background = `conic-gradient(var(--green) ${percent}%, var(--border) ${percent}%)`;
+                document.getElementById('donut-percent').innerText = percent + '%';
+            }
+
+            // Список
+            const list = document.getElementById('college-list');
+            if (list) {
+                list.innerHTML = total === 0 ? '<p style="color:var(--muted); text-align:center;">Нет задач.</p>' : '';
+                requests.forEach(r => {
+                    let btnClass = 'btn-sm', btnText = 'Взять в работу', disabled = '';
+                    if (r.status === 'work') { btnClass = 'btn-sm work'; btnText = 'Завершить'; }
+                    else if (r.status === 'done') { btnClass = 'btn-sm done'; btnText = '<i class="fa-solid fa-check"></i> Внедрено'; disabled = 'disabled'; }
+                    list.innerHTML += `<li class="item"><div><strong>${r.name}</strong><p style="color:var(--muted); font-size:13px; margin-top:4px;">Запрос от: ${r.company}</p></div><button class="${btnClass}" onclick="changeStatus(${r.id})" ${disabled}>${btnText}</button></li>`;
+                });
+            }
+        }
+
+        // --- МУЛЬТИВЫБОР ФИЛЬТРОВ ---
+        function toggleFilter(type, region, btn) {
+            let filters = activeFilters[type];
+
+            if (region === 'all') {
+                filters = ['all'];
+            } else {
+                if (filters.includes('all')) filters = [];
+                
+                if (filters.includes(region)) {
+                    filters = filters.filter(f => f !== region);
+                } else {
+                    filters.push(region);
+                }
+
+                if (filters.length === 0) filters = ['all'];
+            }
+
+            activeFilters[type] = filters;
+
+            const container = document.getElementById(`${type}-filters`);
+            if(container) {
+                const buttons = container.querySelectorAll('.filter-btn');
+                buttons.forEach(b => {
+                    const btnRegion = b.innerText;
+                    if (filters.includes('all') && btnRegion === 'Все') b.classList.add('active');
+                    else if (filters.includes(btnRegion)) b.classList.add('active');
+                    else b.classList.remove('active');
+                });
+            }
+
+            applyFilters(type);
+        }
+
+        function applyFilters(type) {
+            const filters = activeFilters[type];
+            const tableBody = document.getElementById(`${type}-table-body`);
+            if (!tableBody) return;
+
+            const rows = tableBody.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const rowRegion = rows[i].getAttribute('data-region');
+                if (filters.includes('all') || filters.includes(rowRegion)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        // --- МОДАЛКИ ---
+        function openModal(title, html) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+        function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+        function openPlant(name) { openModal('Детали: ' + name, '<div class="modal-row"><span class="modal-label">Специальность:</span><span class="modal-value">Оператор ЧПУ</span></div><div class="modal-row"><span class="modal-label">Требуется:</span><span class="modal-value text-red">15 чел.</span></div>'); }
+        function openCollege(name) { openModal('Детали: ' + name, '<div class="modal-row"><span class="modal-label">Специальности:</span><span class="modal-value">Python, AutoCAD</span></div><div class="modal-row"><span class="modal-label">Студентов:</span><span class="modal-value">850</span></div>'); }
+
+        // --- УТИЛИТЫ ---
+        function saveData() { localStorage.setItem('sb_requests', JSON.stringify(requests)); }
+        function resetDemo() { localStorage.clear(); showToast('Сброшено!'); setTimeout(() => location.reload(), 1000); }
+        function showToast(msg) { const t = document.getElementById('toast'); document.getElementById('toast-text').innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+        // --- СТАРТ ---
+        window.addEventListener('DOMContentLoaded', () => {
+            if(localStorage.getItem('sb_theme') === 'dark') toggleTheme();
+            updateUI();
+            analyzeSkill();
+        });
+    </script>
 </body>
 </html>
