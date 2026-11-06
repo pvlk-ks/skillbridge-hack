@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge | Рабочий кабинет</title>
+    <!-- Иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Наш CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= САЙДБАР ================= -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-bridge"></i> SkillBridge <span class="badge">PRO</span>
+        </div>
+        
+        <nav class="nav">
+            <div class="nav-item active" onclick="navTo('analytics', this)">
+                <i class="fa-solid fa-house"></i> Рабочий стол
+            </div>
+            <div class="nav-item" onclick="navTo('plants', this)">
+                <i class="fa-solid fa-industry"></i> Предприятия
+            </div>
+            <div class="nav-item" onclick="navTo('colleges', this)">
+                <i class="fa-solid fa-graduation-cap"></i> Колледжи
+            </div>
+            <div class="nav-item" onclick="navTo('reports', this)">
+                <i class="fa-solid fa-file-invoice"></i> Отчеты
+            </div>
+        </nav>
+
+        <!-- Профиль пользователя -->
+        <div class="user">
+            <div class="avatar">МО</div>
+            <div class="user-info">
+                <p class="name">Мин. Образования</p>
+                <p class="role">Республиканский уровень</p>
+            </div>
+        </div>
+
+        <!-- Кнопка сброса демо-данных -->
+        <div style="padding: 0 24px 20px 24px;">
+            <button onclick="resetDemo()" class="btn-reset">
+                <i class="fa-solid fa-rotate-left"></i> Сбросить данные
+            </button>
+        </div>
+    </aside>
+
+    <!-- ================= ОСНОВНОЙ КОНТЕНТ ================= -->
+    <main class="main">
+        
+        <!-- Верхняя панель -->
+        <header class="top">
+            <h1 id="page-title">Синхронизация рынка труда</h1>
+            <div class="header-actions">
+                <!-- Кнопка переключения темы -->
+                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                
+                <!-- Переключатель ролей (Завод / Колледж) -->
+                <div class="roles" id="role-switcher">
+                    <button id="tab-plant" class="active" onclick="switchRole('plant')">
+                        <i class="fa-solid fa-industry"></i> Кабинет Завода
+                    </button>
+                    <button id="tab-college" onclick="switchRole('college')">
+                        <i class="fa-solid fa-building-columns"></i> Кабинет Колледжа
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= СТРАНИЦА 1: РАБОЧИЙ СТОЛ ================= -->
+        <div id="page-analytics" class="page active">
+            
+            <!-- Вид для Завода -->
+            <div id="view-plant">
+                <div class="kpis">
+                    <!-- Карточка 1 -->
+                    <div class="kpi red">
+                        <h3>Ожидают решения</h3>
+                        <p class="val text-red" id="plant-gap-count">0</p>
+                        <p class="trend text-red"><i class="fa-solid fa-triangle-exclamation"></i> Запросов без ответа</p>
+                    </div>
+                    <!-- Карточка 2 -->
+                    <div class="kpi green">
+                        <h3>Выполнено</h3>
+                        <p class="val text-green" id="plant-done-count">0</p>
+                        <p class="trend text-green"><i class="fa-solid fa-check"></i> Закрыто колледжами</p>
+                    </div>
+                    <!-- Карточка 3: График -->
+                    <div class="kpi chart-kpi">
+                        <h3>Общий прогресс</h3>
+                        <div class="donut-container">
+                            <div class="donut" id="donut-chart"></div>
+                            <div class="donut-center" id="donut-percent">0%</div>
+                        </div>
+                        <p class="trend">Закрыто от всех запросов</p>
+                    </div>
+                </div>
+                
+                <div class="panels">
+                    <!-- Панель поиска -->
+                    <div class="panel">
+                        <h2><i class="fa-solid fa-magnifying-glass-chart"></i> Поиск колледжа</h2>
+                        <p class="sub">Выберите требуемую компетенцию, чтобы найти учебное заведение.</p>
+                        <select id="skill-select" class="input" onchange="analyzeSkill()">
+                            <option value="python">Python (Автоматизация)</option>
+                            <option value="cnc">Станки с ЧПУ</option>
+                            <option value="autocad">AutoCAD (Проектирование)</option>
+                        </select>
+                        <div id="match-box" class="match">Выберите навык для анализа...</div>
+                    </div>
+                    
+                    <!-- Панель создания запроса -->
+                    <div class="panel">
+                        <h2><i class="fa-solid fa-bolt"></i> Создать запрос</h2>
+                        <p class="sub">Опишите, каких специалистов не хватает вашему предприятию.</p>
+                        <input type="text" id="new-skill-input" class="input" placeholder="Например: Оператор ЧПУ">
+                        <button class="btn" onclick="createRequest()">
+                            <i class="fa-solid fa-paper-plane"></i> Отправить колледжам
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вид для Колледжа -->
+            <div id="view-college" style="display:none;">
+                <div class="kpis">
+                    <div class="kpi red">
+                        <h3>Новые запросы</h3>
+                        <p class="val text-red" id="college-req-count">0</p>
+                        <p class="trend">Требуют рассмотрения</p>
+                    </div>
+                    <div class="kpi orange">
+                        <h3>В работе</h3>
+                        <p class="val text-orange" id="college-work-count">0</p>
+                        <p class="trend">Взято методистами</p>
+                    </div>
+                    <div class="kpi green">
+                        <h3>Внедрено</h3>
+                        <p class="val text-green" id="college-done-count">0</p>
+                        <p class="trend"><i class="fa-solid fa-check"></i> В учебном плане</p>
+                    </div>
+                </div>
+                <div class="panel" style="width: 100%;">
+                    <h2><i class="fa-solid fa-list-check"></i> Задачи на обновление плана</h2>
+                    <p class="sub">Нажмите "Взять в работу", когда методист начнет разработку модуля.</p>
+                    <ul class="list" id="college-list">
+                        <!-- Сюда JS будет добавлять задачи -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= СТРАНИЦА 2: ПРЕДПРИЯТИЯ ================= -->
+        <div id="page-plants" class="page">
+            <div class="panel" style="width: 100%;">
+                <h2><i class="fa-solid fa-industry"></i> Реестр предприятий</h2>
+                <p class="sub">Нажмите на строку, чтобы посмотреть детали и контакты.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Предприятие</th><th>Регион</th><th>Активных запросов</th><th>Статус</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="openPlant('БелАЗ')" style="cursor: pointer;">
+                            <td>ОАО "БелАЗ"</td><td>Жодино</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td>
+                        </tr>
+                        <tr onclick="openPlant('МТЗ')" style="cursor: pointer;">
+                            <td>ОАО "МТЗ"</td><td>Минск</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td>
+                        </tr>
+                        <tr onclick="openPlant('Интеграл')" style="cursor: pointer;">
+                            <td>ОАО "Интеграл"</td><td>Минск</td><td>0</td><td><span class="status green-text-bg">Синхронизировано</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= СТРАНИЦА 3: КОЛЛЕДЖИ ================= -->
+        <div id="page-colleges" class="page">
+            <div class="panel" style="width: 100%;">
+                <h2><i class="fa-solid fa-graduation-cap"></i> Реестр колледжей</h2>
+                <p class="sub">Нажмите на строку, чтобы посмотреть детали учебного заведения.</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Учреждение</th><th>Город</th><th>Закрыто задач</th><th>Статус</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="openCollege('Минский')" style="cursor: pointer;">
+                            <td>Минский радиотехнический колледж</td><td>Минск</td><td>12</td><td><span class="status green-text-bg">Активен</span></td>
+                        </tr>
+                        <tr onclick="openCollege('Брестский')" style="cursor: pointer;">
+                            <td>Брестский машиностроительный колледж</td><td>Брест</td><td>4</td><td><span class="status orange-text-bg">Отстает</span></td>
+                        </tr>
+                        <tr onclick="openCollege('Гомельский')" style="cursor: pointer;">
+                            <td>Гомельский государственный колледж</td><td>Гомель</td><td>8</td><td><span class="status green-text-bg">Активен</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= СТРАНИЦА 4: ОТЧЕТЫ ================= -->
+        <div id="page-reports" class="page">
+            <div class="panel" style="width: 100%;">
+                <h2><i class="fa-solid fa-file-invoice"></i> Сводный отчет</h2>
+                <p class="sub">Статистика по закрытым запросам за текущий месяц.</p>
+                <div class="report-box">
+                    <p>Всего внедрено навыков в РБ</p>
+                    <h1 id="report-total">0</h1>
+                </div>
+                <button class="btn" onclick="downloadReport()" style="max-width: 300px; margin: 0 auto;">
+                    <i class="fa-solid fa-download"></i> Скачать отчет
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= МОДАЛЬНОЕ ОКНО (Всплывающие детали) ================= -->
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modal-title">Заголовок</h2>
+                <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Сюда JS будет вставлять текст -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= УВЕДОМЛЕНИЯ ================= -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i> <span id="toast-text">Готово!</span>
+    </div>
+
+    <!-- Подключение JS -->
+    <script src="app.js"></script>
+</body>
+</html>
