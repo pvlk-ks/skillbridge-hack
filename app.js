@@ -256,6 +256,33 @@ function downloadReport() {
     setTimeout(() => showToast('Отчет успешно скачан!'), 1000);
 }
 
+// Функция фильтрации по регионам
+function filterTable(type) {
+    // Определяем, какую таблицу фильтруем и откуда берем значение
+    const filterValue = type === 'plants' 
+        ? document.getElementById('region-filter-plants').value 
+        : document.getElementById('region-filter-colleges').value;
+        
+    // Находим все строки в нужной таблице
+    const tableBody = type === 'plants' 
+        ? document.getElementById('plants-table-body') 
+        : document.getElementById('colleges-table-body');
+        
+    const rows = tableBody.getElementsByTagName('tr');
+
+    // Проходимся по каждой строке
+    for (let i = 0; i < rows.length; i++) {
+        const region = rows[i].getAttribute('data-region');
+        
+        // Если выбрано "Все регионы" или регион строки совпадает с выбранным
+        if (filterValue === 'all' || region === filterValue) {
+            rows[i].style.display = ''; // Показываем строку
+        } else {
+            rows[i].style.display = 'none'; // Скрываем строку
+        }
+    }
+}
+
 // ================= 11. ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ =================
 window.addEventListener('DOMContentLoaded', () => {
     // Восстанавливаем тему, если она была темной

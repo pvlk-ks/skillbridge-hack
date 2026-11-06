@@ -183,20 +183,22 @@
             <div class="panel" style="width: 100%;">
                 <h2><i class="fa-solid fa-industry"></i> Реестр предприятий</h2>
                 <p class="sub">Нажмите на строку, чтобы посмотреть детали и контакты.</p>
+                <div style="margin-bottom: 20px; max-width: 300px;">
+                <select id="region-filter-plants" class="input" onchange="filterTable('plants')">
+                    <option value="all">Все регионы</option>
+                    <option value="Минск">Минск</option>
+                    <option value="Жодино">Жодино</option>
+                </select>
+            </div>
                 <table class="data-table">
                     <thead>
                         <tr><th>Предприятие</th><th>Регион</th><th>Активных запросов</th><th>Статус</th></tr>
                     </thead>
                     <tbody>
-                        <tr onclick="openPlant('БелАЗ')" style="cursor: pointer;">
-                            <td>ОАО "БелАЗ"</td><td>Жодино</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td>
-                        </tr>
-                        <tr onclick="openPlant('МТЗ')" style="cursor: pointer;">
-                            <td>ОАО "МТЗ"</td><td>Минск</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td>
-                        </tr>
-                        <tr onclick="openPlant('Интеграл')" style="cursor: pointer;">
-                            <td>ОАО "Интеграл"</td><td>Минск</td><td>0</td><td><span class="status green-text-bg">Синхронизировано</span></td>
-                        </tr>
+                        <tbody id="plants-table-body">
+                        <tr onclick="openPlant('БелАЗ')" data-region="Жодино"><td>ОАО "БелАЗ"</td><td>Жодино</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td></tr>
+                        <tr onclick="openPlant('МТЗ')" data-region="Минск"><td>ОАО "МТЗ"</td><td>Минск</td><td>1</td><td><span class="status red-text-bg">Требует внимания</span></td></tr>
+                        <tr onclick="openPlant('Интеграл')" data-region="Минск"><td>ОАО "Интеграл"</td><td>Минск</td><td>0</td><td><span class="status green-text-bg">Синхронизировано</span></td></tr>
                     </tbody>
                 </table>
             </div>
